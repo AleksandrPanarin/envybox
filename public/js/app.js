@@ -1949,9 +1949,12 @@ __webpack_require__.r(__webpack_exports__);
         phone: '',
         message: ''
       };
+      this.alertClass = '';
+      this.alertMessage = '';
       axios__WEBPACK_IMPORTED_MODULE_0___default().post('/api/v1/feedback', this.form).then(function (res) {
         _this.alertClass = 'alert-success';
-        _this.alertMessage = 'Success'; // window.location.reload()
+        _this.alertMessage = 'Success';
+        window.location.reload();
       })["catch"](function (error) {
         if (error.response.status === 400) {
           _this.errors = error.response.data.errors;
@@ -37690,7 +37693,7 @@ var render = function() {
                   ? "is-invalid"
                   : "is-valid"
                 : "",
-              attrs: { type: "text", id: "name" },
+              attrs: { type: "text", id: "name", placeholder: "Name" },
               domProps: { value: _vm.form.name },
               on: {
                 input: function($event) {
@@ -37725,7 +37728,11 @@ var render = function() {
                   ? "is-invalid"
                   : "is-valid"
                 : "",
-              attrs: { type: "text", id: "phone" },
+              attrs: {
+                type: "text",
+                id: "phone",
+                placeholder: "+7 999 999-99-99"
+              },
               domProps: { value: _vm.form.phone },
               on: {
                 input: function($event) {

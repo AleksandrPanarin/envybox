@@ -3,6 +3,10 @@
 namespace App\Http\Controllers\Api\v1;
 
 use App\Http\Controllers\Controller;
+use App\Services\Factory\Feedback;
+use App\Services\Factory\JsonFile;
+use App\Services\Factory\MysqlDatabase;
+use App\Services\Factory\StoreFactory;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
@@ -19,9 +23,9 @@ class FeedbackController extends Controller
     public function store(Request $request): JsonResponse
     {
         $validator = $this->getValidationFactory()->make($request->all(), [
-            'name' => 'required|string|min:6',
-            'phone' => 'required|string|min:10',
-            'message' => 'required|string|min:10',
+            'name' => 'required|string|min:1',
+            'phone' => 'required|regex:/^([0-9\s\-\+\(\)]*)$/|min:10',
+            'message' => 'required',
         ]);
 
         if ($validator->fails()) {
@@ -37,6 +41,14 @@ class FeedbackController extends Controller
                 'errors' => $errorMessages
             ], Response::HTTP_BAD_REQUEST);
         }
+        $data = $request->all();
+        $feedback = (new Feedback())
+            ->setName($data['name'])
+            ->setPhone($data['phone'])
+            ->setMessage($data['message']);
+
+        StoreFactory::createStore(MysqlDatabase::class)->save($feedback);
+        StoreFactory::createStore(JsonFile::class)->save($feedback);
 
         return response()->json([
             'code' => Response::HTTP_CREATED,
